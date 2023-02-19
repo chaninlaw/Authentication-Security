@@ -5,10 +5,11 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
 const md5 = require("md5");
+const bcrypt = require("bcrypt");
 
 const app = express();
 
-
+const saltRounds = 10;
 
 app.use(express.static("public"));
 
@@ -42,7 +43,7 @@ app.route("/login")
     })
     .post(function (req, res) {
         const username = req.body.username;
-        const password = md5(req.body.password);
+        const password = req.body.password;
 
         User.findOne(
             { email: username },
@@ -51,10 +52,13 @@ app.route("/login")
                     console.log(err);
                 } else {
                     if (foundUser) {
-                        if (foundUser.password === password) {
-                            console.log(password);
-                            res.render("secrets");
-                        }
+
+                        bcrypt.compare(password, foundUser.password, function (err, result) {
+                            if (result === true) {
+                                res.render("secrets");
+                            }
+                        });
+
                     }
                 }
             });
@@ -65,18 +69,23 @@ app.route("/register")
         res.render("register");
     })
     .post(function (req, res) {
-        const newUser = new User({
-            email: req.body.username,
-            password: md5(req.body.password)
+
+        bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
+            const newUser = new User({
+                email: req.body.username,
+                password: hash
+            });
+            newUser.save(function (err) {
+                if (!err) {
+                    res.render("secrets");
+                } else {
+                    console.log(err);
+                }
+            });
         });
-        newUser.save(function (err) {
-            if (!err) {
-                res.render("secrets");
-            } else {
-                console.log(err);
-            }
-        })
-    })
+
+
+    });
 
 
 
