@@ -93,7 +93,9 @@ passport.use(new FacebookStrategy({
 ));
 
 app.get("/", function (req, res) {
-    res.render("home");
+    res.render("home", {
+        check: req.session.passport
+    });
 });
 
 app.route("/login")
@@ -144,6 +146,7 @@ app.route("/secrets")
             if (foundUsers) {
                 res.render("secrets", {
                     usersWithSecrets: foundUsers,
+                    check: req.session.passport
                 });
             }
         });

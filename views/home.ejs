@@ -8,9 +8,12 @@
       <p class="lead">Don't keep your secrets, share them anonymously!</p>
       <a class="btn btn-warning" href="/secrets"> Our Secret! shared with anonymous user </a>
       <hr>
-      <a class="btn btn-light btn-lg" href="/register" role="button">Register</a>
-      <a class="btn btn-dark btn-lg" href="/login" role="button">Login</a>
-
+      <% if (!!check===true) { %>
+        <a class="btn btn-light btn-lg" href="/logout" role="button">Log out</a>
+        <% } else { %>
+          <a class="btn btn-light btn-lg" href="/register" role="button">Register</a>
+          <a class="btn btn-dark btn-lg" href="/login" role="button">Login</a>
+          <% } %>
     </div>
   </div>
 
